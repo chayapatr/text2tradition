@@ -200,11 +200,11 @@ export const choices = {
       },
     ],
   },
-  dances: {
-    title: 'dancers',
-    triggers: ['dances'],
-    steps: [steps.dances],
-  },
+  // dances: {
+  //   title: 'dancers',
+  //   triggers: ['dances'],
+  //   steps: [steps.dances],
+  // },
 } satisfies Record<string, Choice>
 
 type Choices = typeof choices

@@ -82,7 +82,7 @@ html:not(.dark) body {
   top: 0;
   bottom: 0;
 
-  z-index: 2;
+  z-index: -1;
 
   width: 100vw;
   height: 100vh;

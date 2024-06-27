@@ -24,11 +24,50 @@ import { $currentScene } from '../store/scene'
 const showPrompt = useStore($showPrompt)
 
 const rendererElement = ref<HTMLDivElement>()
+let show = () => {
+  console.log("hello!")
+}
 // const plotterContainer = ref<HTMLDivElement>()
 
 onMounted(async () => {
   await world.preload()
   await world.setup()
+
+  show = async () => {
+    console.log('start')
+      if (world.isEnding && world.flags.waitingEndingStart) {
+        return
+      }
+
+      const willVisible = !showPrompt.value
+
+      const completed = $valueCompleted.get()
+
+      if (completed) {
+        soundManager.play()
+        // world.voice.enableVoice('prompt completed')
+        resetPrompt()
+        $showPrompt.set(true)
+
+        return
+      }
+
+      resetPrompt()
+
+      if (willVisible) {
+        soundManager.play()
+        // world.voice.enableVoice('prompt activated')
+        $showPrompt.set(true)
+
+        // start the prompt timeout countdown
+        extendPromptTimeout('prompt activated', true)
+      } else {
+        world.voice.stop()
+        $showPrompt.set(false)
+
+        clearPromptTimeout('prompt deactivated')
+    }
+  }
 
   window.addEventListener('keydown', async (event) => {
     if (event.key === ' ' || event.key === 'PageDown') {
@@ -163,5 +202,12 @@ onMounted(async () => {
 
     <StepPrompt v-if="showPrompt" />
     <StageControl />
+
+    <div class="fixed w-screen h-screen bg-black/10 m-4">
+      <button @click="show" class=" border bg-black text-white px-4 py-2">
+        Add Command
+      </button>
+    </div>
   </div>
+
 </template>

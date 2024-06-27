@@ -106,16 +106,16 @@ const soundState = computed(() => {
 
 <template>
   <div
-    class="fixed top-10 left-10 prompt-root-container animate__animated animate__fadeInUp rounded-10 capitalize"
+    class="fixed top-15 left-4 prompt-root-container animate__animated animate__fadeInUp rounded-10 capitalize"
   >
     <div class="fixed w-full h-full rounded-10 prompt-backdrop"></div>
 
     <div class="space-y-4 text-white prompt-root rounded-10">
       <div
-        class="flex items-start justify-start gap-x-6 text-8 animate__animated"
+        class="flex items-start justify-start gap-x-6 text-4 animate__animated"
         :class="{ 'text-white rounded': completed }"
       >
-        <div
+        <!-- <div
           class="min-w-14 min-h-14 shadow shadow-2xl relative z-2 flex items-center justify-center animate__animated"
           :class="[
             {
@@ -127,7 +127,7 @@ const soundState = computed(() => {
             },
           ]"
           v-if="!completed"
-        />
+        /> -->
 
         <div
           flex
@@ -223,9 +223,9 @@ const soundState = computed(() => {
       <div v-if="completed" class="flex flex-col gap-y-1">
         <TransitionGroup name="choice-list">
           <div
-            v-for="(log, id) in logs.slice(0, 5)"
+            v-for="(log, id) in logs.slice(0, 3)"
             :key="log"
-            class="text-[14px] text-white animate__animated animate__fadeInUp transition-faster"
+            class="text-[14px] text-neutral-500 animate__animated animate__fadeInUp transition-faster"
             v-show="id !== logs.length - 1"
           >
             $ {{ log }}

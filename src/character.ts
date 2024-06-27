@@ -154,12 +154,13 @@ export class Character {
   static sources = {
     none: '',
 
-    waiting: 'subinwaiting.glb',
-    kukpat: 'Kukpat.glb',
-    terry: 'terry.glb',
-    changhung: 'changhung.glb',
-    yokrob: 'YOKROB.glb',
-    yokroblingImprovise: 'YOKROBlingimprovise.glb',
+    // waiting: 'subinwaiting.glb',
+    waiting: 'Kukpat.glb',
+    // kukpat: 'Kukpat.glb',
+    // terry: 'terry.glb',
+    // changhung: 'changhung.glb',
+    // yokrob: 'YOKROB.glb',
+    // yokroblingImprovise: 'YOKROBlingimprovise.glb',
 
     // Pichet dancers in ending scene.
     // pichetMaster: 'Master.glb',
@@ -171,10 +172,10 @@ export class Character {
     // tranimid: 'tranimid.glb',
 
     // black background
-    padungLast: 'Padunglast.glb',
-    terryLast: 'Terrylast.glb',
-    tasLast: 'Taslast.glb',
-    changhungLast: 'Changhonglast.glb',
+    // padungLast: 'Padunglast.glb',
+    // terryLast: 'Terrylast.glb',
+    // tasLast: 'Taslast.glb',
+    // changhungLast: 'Changhonglast.glb',
   }
 
   static defaultActions: Record<ModelKey, string> = {
@@ -182,24 +183,25 @@ export class Character {
     // abstract: 'no.33_.',
     // robot: 'no.33_..001',
     // abstract57: 'no57_Tas',
-    kukpat: 'kukpat_Tas',
+    // kukpat: 'kukpat_Tas',
     // tranimid: 'tranimid_Tas',
 
     // animation track names for solo dances
-    terry: 'terry_chr02',
-    changhung: 'Changhung002_chr02',
-    yokrob: 'yokrobling_Tas',
-    yokroblingImprovise: 'yokroblingimprovised_chr02.001',
+    // terry: 'terry_chr02',
+    // changhung: 'Changhung002_chr02',
+    // yokrob: 'yokrobling_Tas',
+    // yokroblingImprovise: 'yokroblingimprovised_chr02.001',
 
-    waiting: 'sit002_Tas.001',
+    // waiting: 'sit002_Tas.001',
+    waiting: 'kukpat_Tas',
 
     // pichetMaster: 'Master',
     // pichetGenBlack: 'Action|Action|Action_Action_Action',
 
-    padungLast: 'padungdance_Tas_padungdance_Tas',
-    terryLast: 'Terrydance_Tas',
-    changhungLast: 'Changhongdance_Tas_Changhongdance_Tas',
-    tasLast: 'tasdance002_Tas',
+    // padungLast: 'padungdance_Tas_padungdance_Tas',
+    // terryLast: 'Terrydance_Tas',
+    // changhungLast: 'Changhongdance_Tas_Changhongdance_Tas',
+    // tasLast: 'tasdance002_Tas',
   }
 
   constructor(options?: Partial<CharacterOptions>) {
