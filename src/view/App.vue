@@ -203,8 +203,8 @@ onMounted(async () => {
     <StepPrompt v-if="showPrompt" />
     <StageControl />
 
-    <div class="fixed w-screen h-screen bg-black/10 m-4">
-      <button @click="show" class=" border bg-black text-white px-4 py-2">
+    <div class="fixed w-screen h-screen m-4">
+      <button @click="show" class="border-0 lg:text-4 bg-neutral-900 bg-black text-white px-4 py-2 hover:bg-neutral-800 hover:cursor-pointer">
         Add Command
       </button>
     </div>

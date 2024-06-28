@@ -15,6 +15,7 @@ import {
   $selectedValues,
   $valueCompleted,
   $nonFinalNum,
+$currentStepId,
 } from '../store/choice.ts'
 
 import {
@@ -56,6 +57,7 @@ const isConfused = computed(() => status.value === 'confused')
 const isAnimationFinished = computed(() => time.value >= duration.value)
 
 const selectedStepChoiceTitles = computed(() => {
+  
   const steps = selectedChoice.value?.steps
   if (!steps) return []
 
@@ -102,6 +104,7 @@ const soundState = computed(() => {
 
   return 'loading'
 })
+
 </script>
 
 <template>
@@ -112,7 +115,7 @@ const soundState = computed(() => {
 
     <div class="space-y-4 text-white prompt-root rounded-10">
       <div
-        class="flex items-start justify-start gap-x-6 text-4 animate__animated"
+        class="flex items-start justify-start gap-x-6 text-4 lg:text-6 xl:text-8 animate__animated"
         :class="{ 'text-white rounded': completed }"
       >
         <!-- <div
@@ -168,7 +171,7 @@ const soundState = computed(() => {
           </TransitionGroup>
         </div>
 
-        <div
+        <!-- <div
           v-for="choice in selectedStepChoiceTitles"
           class="hover:bg-white hover:text-black hover:rounded cursor-pointer py-1 pb-2 px-2 last:pr-4 animate__animated animate__fadeInUp"
           :key="choice"
@@ -177,7 +180,7 @@ const soundState = computed(() => {
         >
           <span v-if="numeric(choice, currentStep?.max)">> {{ choice }}%</span>
           <span v-else>> {{ choice }}</span>
-        </div>
+        </div> -->
 
         <div flex flex-col v-if="currentStep?.type === 'choice' && !completed">
           <div
@@ -198,7 +201,7 @@ const soundState = computed(() => {
         </div>
 
         <div flex flex-col v-if="currentStep?.type === 'percent' && !completed">
-          <div
+          <!-- <div
             py-1
             px-2
             @click="addValue('50')"
@@ -209,6 +212,18 @@ const soundState = computed(() => {
               <span v-if="currentPerc != null">{{ currentPerc }}% -> ?</span>
               (0% - {{ currentStep.max ?? 100 }}%)</span
             >
+          </div> -->
+
+          <div
+            class="space-y-2 pb-1"
+          >
+              <div v-if="currentPerc != null" class="text-neutral-500">> Current: {{ currentPerc }}%</div>
+
+              <div v-for="i in (currentStep.max ? [0, 25, 50, 100, 150, 200, 300] : [0, 25, 50, 75, 100])" :key="i">
+                <div @click="addValue(`${(i)}`)" class="px-2 py-1 rounded animate__animated animate__fadeInUp hover:cursor-pointer hover:bg-white hover:text-black">
+                  > To {{ i }}%
+                </div>
+              </div>
           </div>
 
           <div
@@ -220,18 +235,18 @@ const soundState = computed(() => {
         </div>
       </div>
 
-      <div v-if="completed" class="flex flex-col gap-y-1">
+      <!-- <div v-if="completed" class="flex flex-col gap-y-1">
         <TransitionGroup name="choice-list">
           <div
-            v-for="(log, id) in logs.slice(0, 3)"
+            v-for="(log, id) in logs.slice(0, 5)"
             :key="log"
-            class="text-[14px] text-neutral-500 animate__animated animate__fadeInUp transition-faster"
+            class="text-[14px] lg:text-6 text-neutral-500 animate__animated animate__fadeInUp transition-faster"
             v-show="id !== logs.length - 1"
           >
             $ {{ log }}
           </div>
         </TransitionGroup>
-      </div>
+      </div> -->
     </div>
   </div>
 
@@ -241,9 +256,9 @@ const soundState = computed(() => {
     left-4
     class="text-[12px] space-y-1 dark:text-gray-400 text-white font-mono"
   >
-    <div v-if="status" :class="[{ 'text-red-5': status === 'failed' }]">
+    <!-- <div v-if="status" :class="[{ 'text-red-5': status === 'failed' }]">
       s: {{ status }}
-    </div>
+    </div> -->
 
     <div v-if="transcript">h: {{ transcript?.slice(0, 60) }}</div>
 
@@ -253,8 +268,8 @@ const soundState = computed(() => {
       <span v-if="nonFinalNum !== null">| nfn: {{ nonFinalNum }}</span>
     </div>
 
-    <div v-if="voiceError" class="text-red-5">
+    <!-- <div v-if="voiceError" class="text-red-5">
       ve: {{ voiceError.error }} {{ voiceError.message }}
-    </div>
+    </div> -->
   </div>
 </template>

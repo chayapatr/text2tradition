@@ -184,21 +184,21 @@ export const choices = {
       },
     ],
   },
+  // speed: {
+  //   title: 'dance speed',
+  //   triggers: ['speed'],
+  //   steps: [
+  //     {
+  //       type: 'percent',
+  //       max: 300,
+  //       current: () => CurrentPercent.speed(),
+  //     },
+  //   ],
+  // },
   reset: {
     title: 'reset',
     triggers: ['reset'],
     steps: [],
-  },
-  speed: {
-    title: 'dance speed',
-    triggers: ['speed'],
-    steps: [
-      {
-        type: 'percent',
-        max: 300,
-        current: () => CurrentPercent.speed(),
-      },
-    ],
   },
   // dances: {
   //   title: 'dancers',
