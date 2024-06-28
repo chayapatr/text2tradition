@@ -15,7 +15,7 @@ import {
   $selectedValues,
   $valueCompleted,
   $nonFinalNum,
-$currentStepId,
+  $currentStepId,
 } from '../store/choice.ts'
 
 import {
