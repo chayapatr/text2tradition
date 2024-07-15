@@ -87,11 +87,11 @@ export const steps = {
   dances: {
     type: 'choice',
     choices: [
-      { title: '1. tas kukpat', key: 'kukpat' },
-      { title: '2. terry', key: 'terry' },
-      { title: '3. changhung', key: 'changhung' },
-      { title: '4. padung yokrob', key: 'yokrob' },
-      { title: '5. padung yokrob monkey', key: 'yokroblingImprovise' },
+      { title: '1. kukpat', key: 'kukpat' },
+      // { title: '3. changhung', key: 'changhung' },
+      { title: '3. yokrob', key: 'yokrob' },
+      { title: '3. yokrob modern', key: 'yokroblingImprovise' },
+      { title: '4. freeform', key: 'terry' },
       // { title: 'number 60', key: 'number60' },
       // { title: '7. robot 33', key: 'robot33' },
       // { title: '8. robot 57', key: 'robot57' },
@@ -184,27 +184,27 @@ export const choices = {
       },
     ],
   },
-  // speed: {
-  //   title: 'dance speed',
-  //   triggers: ['speed'],
-  //   steps: [
-  //     {
-  //       type: 'percent',
-  //       max: 300,
-  //       current: () => CurrentPercent.speed(),
-  //     },
-  //   ],
-  // },
+  speed: {
+    title: 'speed',
+    triggers: ['speed'],
+    steps: [
+      {
+        type: 'percent',
+        max: 300,
+        current: () => CurrentPercent.speed(),
+      },
+    ],
+  },
   reset: {
     title: 'reset',
     triggers: ['reset'],
     steps: [],
   },
-  // dances: {
-  //   title: 'dancers',
-  //   triggers: ['dances'],
-  //   steps: [steps.dances],
-  // },
+  dances: {
+    title: 'dances',
+    triggers: ['dances'],
+    steps: [steps.dances],
+  },
 } satisfies Record<string, Choice>
 
 type Choices = typeof choices

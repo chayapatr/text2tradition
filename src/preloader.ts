@@ -1,3 +1,4 @@
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 import { Character } from './character'
@@ -28,7 +29,13 @@ export class ModelPreloader {
     try {
       const now = performance.now()
 
+      const draco = new DRACOLoader()
+      draco.setDecoderPath(`https://www.gstatic.com/draco/v1/decoders/`)
+      draco.preload()
+
       const loader = new GLTFLoader()
+      loader.setDRACOLoader(draco)
+
       const model = await loader.loadAsync(`/models/${source}`)
 
       this.models.set(source, model)

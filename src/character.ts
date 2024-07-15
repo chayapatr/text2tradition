@@ -157,10 +157,10 @@ export class Character {
     // waiting: 'subinwaiting.glb',
     waiting: 'Kukpat.glb',
     // kukpat: 'Kukpat.glb',
-    // terry: 'terry.glb',
+    terry: 'terry.glb',
     // changhung: 'changhung.glb',
-    // yokrob: 'YOKROB.glb',
-    // yokroblingImprovise: 'YOKROBlingimprovise.glb',
+    yokrob: 'yokrob.glb',
+    yokroblingImprovise: 'improvise.glb',
 
     // Pichet dancers in ending scene.
     // pichetMaster: 'Master.glb',
@@ -187,13 +187,14 @@ export class Character {
     // tranimid: 'tranimid_Tas',
 
     // animation track names for solo dances
-    // terry: 'terry_chr02',
+    terry: 'terry_chr02',
     // changhung: 'Changhung002_chr02',
     // yokrob: 'yokrobling_Tas',
-    // yokroblingImprovise: 'yokroblingimprovised_chr02.001',
+    yokroblingImprovise: 'yokroblingimprovised_chr02.001',
 
     // waiting: 'sit002_Tas.001',
     waiting: 'kukpat_Tas',
+    yokrob: 'yokrobling_Tas',
 
     // pichetMaster: 'Master',
     // pichetGenBlack: 'Action|Action|Action_Action_Action',

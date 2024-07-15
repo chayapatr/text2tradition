@@ -4,7 +4,7 @@ import { world } from './world'
 export type DanceConfig = { model: ModelKey; action?: string }
 
 const danceKeyMap: Record<string, DanceConfig> = {
-  kukpat: { model: 'kukpat' },
+  kukpat: { model: 'waiting' },
   terry: { model: 'terry' },
   changhung: { model: 'changhung' },
   yokrob: { model: 'yokrob' },
