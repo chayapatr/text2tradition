@@ -15,7 +15,7 @@ import {
 import { world } from '../world'
 
 import StepPrompt from './StepPrompt.vue'
-import { ding, soundManager } from '../ding.ts'
+import { soundManager } from '../ding.ts' // ding
 import StageControl from './StageControl.vue'
 
 import { EndingKeyframes } from '../character'
@@ -24,6 +24,8 @@ import { $currentScene } from '../store/scene'
 const showPrompt = useStore($showPrompt)
 
 const rendererElement = ref<HTMLDivElement>()
+
+let prompt = ""
 let show = () => {
   console.log("hello!")
 }
@@ -70,40 +72,52 @@ onMounted(async () => {
   }
 
   window.addEventListener('keydown', async (event) => {
-    if (event.key === ' ' || event.key === 'PageDown') {
-      if (world.isEnding && world.flags.waitingEndingStart) {
-        return
-      }
-
-      const willVisible = !showPrompt.value
-
-      const completed = $valueCompleted.get()
-
-      if (completed) {
-        soundManager.play()
-        world.voice.enableVoice('prompt completed')
-        resetPrompt()
-        $showPrompt.set(true)
-
-        return
-      }
-
-      resetPrompt()
-
-      if (willVisible) {
-        soundManager.play()
-        world.voice.enableVoice('prompt activated')
-        $showPrompt.set(true)
-
-        // start the prompt timeout countdown
-        extendPromptTimeout('prompt activated', true)
-      } else {
-        world.voice.stop()
-        $showPrompt.set(false)
-
-        clearPromptTimeout('prompt deactivated')
-      }
+    const el = document.getElementById('prompt')
+    if (el) {
+      el.focus()
     }
+
+    // if enter
+    if(event.key === 'Enter') {
+      console.log(prompt)
+      event.preventDefault();
+      document.getElementById('prompt').value = ""
+    }
+
+    // if (event.key === ' ' || event.key === 'PageDown') {
+    //   if (world.isEnding && world.flags.waitingEndingStart) {
+    //     return
+    //   }
+
+    //   const willVisible = !showPrompt.value
+
+    //   const completed = $valueCompleted.get()
+
+    //   if (completed) {
+    //     soundManager.play()
+    //     world.voice.enableVoice('prompt completed')
+    //     resetPrompt()
+    //     $showPrompt.set(true)
+
+    //     return
+    //   }
+
+    //   resetPrompt()
+
+    //   if (willVisible) {
+    //     soundManager.play()
+    //     world.voice.enableVoice('prompt activated')
+    //     $showPrompt.set(true)
+
+    //     // start the prompt timeout countdown
+    //     extendPromptTimeout('prompt activated', true)
+    //   } else {
+    //     world.voice.stop()
+    //     $showPrompt.set(false)
+
+    //     clearPromptTimeout('prompt deactivated')
+    //   }
+    // }
 
     // if (event.key === 'i') {
     //   if (world.panel.panel._hidden) {
@@ -130,57 +144,57 @@ onMounted(async () => {
     //   navigator.clipboard.writeText(output)
     // }
 
-    if ((event.key === 'e' || event.key === 'ำ') && event.ctrlKey) {
-      if (world.flags.waitingEndingStart) {
-        world.fadeInSceneContent()
+    // if ((event.key === 'e' || event.key === 'ำ') && event.ctrlKey) {
+    //   if (world.flags.waitingEndingStart) {
+    //     world.fadeInSceneContent()
 
-        world.flags.waitingEndingStart = false
-        return
-      }
+    //     world.flags.waitingEndingStart = false
+    //     return
+    //   }
 
-      if (world.isEnding) return $currentScene.set('BLACK')
+    //   if (world.isEnding) return $currentScene.set('BLACK')
 
-      $currentScene.set('ENDING')
-    }
+    //   $currentScene.set('ENDING')
+    // }
 
-    if ((event.key === 'u' || event.key === 'ี') && event.ctrlKey) {
-      world.startShadowCharacter()
-    }
+    // if ((event.key === 'u' || event.key === 'ี') && event.ctrlKey) {
+    //   world.startShadowCharacter()
+    // }
 
-    if ((event.key === 'i' || event.key === 'ร') && event.ctrlKey) {
-      world.startDissolveCharacter()
-    }
+    // if ((event.key === 'i' || event.key === 'ร') && event.ctrlKey) {
+    //   world.startDissolveCharacter()
+    // }
 
-    if (event.key === 'f' && event.ctrlKey) {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen()
-      } else if (document.exitFullscreen) {
-        document.exitFullscreen()
-      }
-    }
+    // if (event.key === 'f' && event.ctrlKey) {
+    //   if (!document.fullscreenElement) {
+    //     document.documentElement.requestFullscreen()
+    //   } else if (document.exitFullscreen) {
+    //     document.exitFullscreen()
+    //   }
+    // }
 
-    if (event.key === 'j' && event.ctrlKey) {
-      console.log(`FORCE RESTART RECOGNIZER`)
-      world.voice.stop()
+    // if (event.key === 'j' && event.ctrlKey) {
+    //   console.log(`FORCE RESTART RECOGNIZER`)
+    //   world.voice.stop()
 
-      setTimeout(() => {
-        world.voice.startRecognition('FORCE RESTART')
-      }, 50)
-    }
+    //   setTimeout(() => {
+    //     world.voice.startRecognition('FORCE RESTART')
+    //   }, 50)
+    // }
 
-    if (event.key === 'k' && event.ctrlKey) {
-      console.log(`FORCE STOP RECOGNIZER`)
-      world.voice.stop()
-    }
+    // if (event.key === 'k' && event.ctrlKey) {
+    //   console.log(`FORCE STOP RECOGNIZER`)
+    //   world.voice.stop()
+    // }
 
-    if (event.key === 'l' && event.ctrlKey) {
-      const nfn = $nonFinalNum.get()
-      console.log(`INSERT NONFINAL NUM: ${nfn}`)
+    // if (event.key === 'l' && event.ctrlKey) {
+    //   const nfn = $nonFinalNum.get()
+    //   console.log(`INSERT NONFINAL NUM: ${nfn}`)
 
-      if (nfn !== null) {
-        handleVoiceSelection(nfn)
-      }
-    }
+    //   if (nfn !== null) {
+    //     handleVoiceSelection(nfn)
+    //   }
+    // }
   })
 
   rendererElement.value?.appendChild(world.renderer.domElement)
@@ -204,9 +218,16 @@ onMounted(async () => {
     <StageControl />
 
     <div class="fixed w-screen h-screen m-4">
-      <button @click="show" class="border-0 lg:text-4 bg-neutral-900 bg-black text-white px-4 py-2 hover:bg-neutral-800 hover:cursor-pointer">
+      <!-- <button @click="show" class="border-0 lg:text-4 bg-neutral-900 bg-black text-white px-4 py-2 hover:bg-neutral-800 hover:cursor-pointer">
         Add Command
-      </button>
+      </button> -->
+      <div class="flex gap-2 font-mono">
+        <div class="text-white text-2xl">prompt ></div>
+        <div class="flex items-end">
+          <textarea v-model="prompt" class="max-w-md bg-transparent focus:outline-none border-none text-white text-2xl" type="text" id="prompt" style="caret-color: transparent; field-sizing: content; resize: none"></textarea>
+          <!-- a -->
+        </div>
+      </div>
     </div>
   </div>
 
