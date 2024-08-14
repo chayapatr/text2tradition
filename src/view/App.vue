@@ -25,7 +25,9 @@ const showPrompt = useStore($showPrompt)
 
 const rendererElement = ref<HTMLDivElement>()
 
-let prompt = ""
+let prompt = ref("")
+let executed = ref(false)
+
 let show = () => {
   console.log("hello!")
 }
@@ -73,6 +75,8 @@ onMounted(async () => {
 
   window.addEventListener('keydown', async (event) => {
     const el = document.getElementById('prompt')
+    executed.value = false
+
     if (el) {
       el.focus()
     }
@@ -82,6 +86,8 @@ onMounted(async () => {
       console.log(prompt)
       event.preventDefault();
       document.getElementById('prompt').value = ""
+      prompt.value = ""
+      executed.value = true
     }
 
     // if (event.key === ' ' || event.key === 'PageDown') {
@@ -214,20 +220,25 @@ onMounted(async () => {
 
     <!-- <div ref="plotterContainer" pointer-events-none /> -->
 
-    <StepPrompt v-if="showPrompt" />
+    <!-- <StepPrompt v-if="showPrompt" /> -->
     <StageControl />
 
-    <div class="fixed w-screen h-screen m-4">
+    <div class="fixed w-screen h-screen m-4 font-mono">
       <!-- <button @click="show" class="border-0 lg:text-4 bg-neutral-900 bg-black text-white px-4 py-2 hover:bg-neutral-800 hover:cursor-pointer">
         Add Command
       </button> -->
-      <div class="flex gap-2 font-mono">
+      <div class="flex gap-2">
         <div class="text-white text-2xl">prompt ></div>
         <div class="flex items-end">
           <textarea v-model="prompt" class="max-w-md bg-transparent focus:outline-none border-none text-white text-2xl" type="text" id="prompt" style="caret-color: transparent; field-sizing: content; resize: none"></textarea>
           <!-- a -->
         </div>
       </div>
+    </div>
+
+    <div class="absolute bottom-4 flex flex-col gap-2 font-mono" v-if="executed">
+      <div class="bg-red-500 text-white p-1 w-min">executed</div>
+      <div class="text-sm text-neutral-300 max-w-md">{{ prompt }}</div>
     </div>
   </div>
 
