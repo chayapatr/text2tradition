@@ -2,7 +2,7 @@ import { produce } from 'immer'
 import { atom, computed } from 'nanostores'
 
 import { runCommand } from '../command'
-import { Choice, ChoiceKey, choices, Step } from '../step-input'
+import { Choice, ChoiceKey, Step } from '../step-input'
 import { world } from '../world'
 
 const PROMPT_TIMEOUT = 1000 * 30
@@ -15,6 +15,206 @@ export const $nonFinalNum = atom<number | null>(null)
 
 export const $showPrompt = atom(false)
 export const $promptTimer = atom<number | null>(null)
+
+const choices = {
+  "energy": {
+      "title": "energy",
+      "triggers": [
+          "energy"
+      ],
+      "steps": [
+          {
+              "type": "choice",
+              "choices": [
+                  {
+                      "title": "upper body",
+                      "key": "upper"
+                  },
+                  {
+                      "title": "lower body",
+                      "key": "lower"
+                  },
+                  {
+                      "title": "reset",
+                      "key": "reset"
+                  }
+              ]
+          },
+          {
+              "type": "percent",
+              "max": 300
+          }
+      ]
+  },
+  "curve": {
+      "title": "circle and curve",
+      "triggers": [
+          "circle"
+      ],
+      "steps": [
+          {
+              "type": "choice",
+              "choices": [
+                  {
+                      "title": "body",
+                      "key": "body"
+                  },
+                  {
+                      "title": "left arm",
+                      "key": "leftArm"
+                  },
+                  {
+                      "title": "right arm",
+                      "key": "rightArm"
+                  },
+                  {
+                      "title": "left leg",
+                      "key": "leftLeg"
+                  },
+                  {
+                      "title": "right leg",
+                      "key": "rightLeg"
+                  },
+                  {
+                      "title": "all",
+                      "key": "all"
+                  }
+              ]
+          },
+          {
+              "type": "percent"
+          }
+      ]
+  },
+  "shifting": {
+      "title": "shifting relations",
+      "triggers": [
+          "shifting",
+          "synchronic",
+          "sync",
+          "relations"
+      ],
+      "steps": [
+          {
+              "type": "choice",
+              "choices": [
+                  {
+                      "title": "left limbs",
+                      "key": "left"
+                  },
+                  {
+                      "title": "right limbs",
+                      "key": "right"
+                  },
+                  {
+                      "title": "body",
+                      "key": "body"
+                  }
+              ]
+          },
+          {
+              "type": "percent"
+          }
+      ]
+  },
+  "space": {
+      "title": "external body space",
+      "triggers": [
+          "space"
+      ],
+      "steps": [
+          {
+              "type": "percent"
+          }
+      ]
+  },
+  "rotations": {
+      "title": "rotations",
+      "triggers": [
+          "turn",
+          "rotation"
+      ],
+      "steps": [
+          {
+              "type": "choice",
+              "choices": [
+                  {
+                      "title": "x",
+                      "key": "x"
+                  },
+                  {
+                      "title": "y",
+                      "key": "y"
+                  },
+                  {
+                      "title": "z",
+                      "key": "z"
+                  },
+                  {
+                      "title": "all",
+                      "key": "all"
+                  },
+                  {
+                      "title": "reset",
+                      "key": "reset"
+                  }
+              ]
+          },
+          {
+              "type": "percent"
+          }
+      ]
+  },
+  "speed": {
+      "title": "speed",
+      "triggers": [
+          "speed"
+      ],
+      "steps": [
+          {
+              "type": "percent",
+              "max": 300
+          }
+      ]
+  },
+  "reset": {
+      "title": "reset",
+      "triggers": [
+          "reset"
+      ],
+      "steps": []
+  },
+  "dances": {
+      "title": "dances",
+      "triggers": [
+          "dances"
+      ],
+      "steps": [
+          {
+              "type": "choice",
+              "choices": [
+                  {
+                      "title": "1. kukpat",
+                      "key": "kukpat"
+                  },
+                  {
+                      "title": "3. yokrob",
+                      "key": "yokrob"
+                  },
+                  {
+                      "title": "3. yokrob modern",
+                      "key": "yokroblingImprovise"
+                  },
+                  {
+                      "title": "4. freeform",
+                      "key": "terry"
+                  }
+              ],
+              "meta": "ordered"
+          }
+      ]
+  }
+}
 
 export const $selectedChoice = computed(
   $selectedChoiceKey,

@@ -52,6 +52,7 @@ export async function switchDancers(key: string) {
 }
 
 export async function changeCharacter(name: CharacterKey) {
+
   const char = world.characterByName(name)
   if (!char) return
 

@@ -646,7 +646,7 @@ export class World {
   }
 
   async fadeOut() {
-    const app = document.querySelector('#app')
+    const app = document.querySelector('#stage')
     if (!app) return
 
     // fade out scene
@@ -658,7 +658,7 @@ export class World {
   }
 
   fadeIn() {
-    const app = document.querySelector('#app')
+    const app = document.querySelector('#stage')
     if (!app) return
 
     // set the proper background now

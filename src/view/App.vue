@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import { ref, onMounted, ReactiveFlags } from 'vue'
 import { useStore } from '@nanostores/vue'
+import { runCommand } from '../command.ts'
+
+import { switchDancers } from '../switch-dance'
 
 import {
   $showPrompt,
@@ -75,19 +78,27 @@ onMounted(async () => {
 
   window.addEventListener('keydown', async (event) => {
     const el = document.getElementById('prompt')
-    executed.value = false
+
+    if(executed.value) {
+      executed.value = false
+      prompt.value = ""
+    }
 
     if (el) {
       el.focus()
     }
 
-    // if enter
     if(event.key === 'Enter') {
       console.log(prompt)
       event.preventDefault();
       document.getElementById('prompt').value = ""
-      prompt.value = ""
+      // prompt.value = ""
       executed.value = true
+
+      // await switchDancers('yokroblingImprovise')
+      // runCommand('energy', ['upper', '300'])
+      // runCommand('rotations', ['x', '25'])
+      // runCommand('rotations', ['y', '100'])
     }
 
     // if (event.key === ' ' || event.key === 'PageDown') {
@@ -216,11 +227,11 @@ onMounted(async () => {
 <template>
   <div class="app-container">
     <div class="backdrop" />
-    <div class="renderer-container" ref="rendererElement" />
+    <div class="renderer-container" id="stage" ref="rendererElement" />
 
     <!-- <div ref="plotterContainer" pointer-events-none /> -->
 
-    <!-- <StepPrompt v-if="showPrompt" /> -->
+    <StepPrompt v-if="showPrompt" />
     <StageControl />
 
     <div class="fixed w-screen h-screen m-4 font-mono">
