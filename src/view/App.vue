@@ -13,6 +13,8 @@ import {
   resetPrompt,
   $nonFinalNum,
   handleVoiceSelection,
+  $selectedChoiceKey,
+  $selectedValues,
 } from '../store/choice'
 
 import { world } from '../world'
@@ -73,8 +75,8 @@ const gen = async (prompt: string): Promise<{ set: Set[] }> => {
       {
         dance: 'yokrob',
         morph: [
-          { key: 'space', value: ['upper', '300'] },
-          // { key: 'rotations', value: ['x', '25'] },
+          { key: 'space', value: ['upper', '200'] },
+          { key: 'rotations', value: ['x', '250'] },
         ],
         time: 5,
       },
@@ -136,6 +138,7 @@ onMounted(async () => {
       timer.value.forEach((t) => clearTimeout(t))
       timer.value = []
       log.value = []
+      world.params.reset()
     }
 
     if (el) {
@@ -155,11 +158,16 @@ onMounted(async () => {
       const setDance = async (set: Set) => {
         log.value = [
           ...log.value,
-          `DANCE > ${set.dance} | ${set.morph
-            .map(
-              (morph) => `${morph.key} [${morph.value[0]}, ${morph.value[1]}]`,
-            )
-            .join(' + ')}`,
+          `DANCE > ${set.dance} ${
+            set.morph.length > 0
+              ? `| ${set.morph
+                  .map(
+                    (morph) =>
+                      `${morph.key} [${morph.value[0]}, ${morph.value[1]}]`,
+                  )
+                  .join(' + ')}`
+              : ''
+          }`,
         ]
         console.log('SET DANCE > ', set.dance)
         world.voice.speak(set.dance)
@@ -340,7 +348,7 @@ onMounted(async () => {
     </div>
 
     <div
-      class="absolute bottom-4 flex flex-col gap-2 font-mono"
+      class="absolute bottom-4 flex flex-col gap-2 font-mono p-6"
       v-if="executed"
     >
       <div class="bg-red-500 text-white p-1 w-min">executing</div>
