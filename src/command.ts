@@ -125,7 +125,7 @@ export async function runCommand(primary: ChoiceKey, args: string[]) {
   appendLog(spokenSentence)
 
   world.voice.stop('run command done')
-  await world.voice.speak(spokenSentence)
+  // await world.voice.speak(spokenSentence)
 
   if (primary === 'curve') {
     const [partText, percText] = args

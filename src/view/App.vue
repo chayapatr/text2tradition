@@ -28,13 +28,64 @@ const showPrompt = useStore($showPrompt)
 
 const rendererElement = ref<HTMLDivElement>()
 
-let prompt = ref("")
+let prompt = ref('')
 let executed = ref(false)
+let log = ref([])
+let timer = ref([])
 
 let show = () => {
-  console.log("hello!")
+  console.log('hello!')
 }
 // const plotterContainer = ref<HTMLDivElement>()
+
+type Morph =
+  | 'energy'
+  | 'rotations'
+  | 'space'
+  | 'reset'
+  | 'dances'
+  | 'curve'
+  | 'shifting'
+interface Set {
+  dance: string
+  morph: { key: Morph; value: [string, string] }[]
+  time: number
+}
+
+const gen = async (prompt: string): Promise<{ set: Set[] }> => {
+  const text = await fetch('/textgen', {
+    method: 'POST',
+    body: JSON.stringify({
+      prompt: prompt,
+    }),
+  }).then((x) => x.text())
+  console.log(text)
+  return {
+    set: [
+      {
+        dance: 'yokroblingImprovise',
+        morph: [
+          { key: 'energy', value: ['upper', '300'] },
+          { key: 'rotations', value: ['y', '25'] },
+        ],
+        time: 5,
+      },
+      {
+        dance: 'yokrob',
+        morph: [
+          { key: 'space', value: ['upper', '300'] },
+          // { key: 'rotations', value: ['x', '25'] },
+        ],
+        time: 5,
+      },
+      {
+        dance: 'kukpat',
+        morph: [],
+        time: 10,
+      },
+    ],
+  }
+}
 
 onMounted(async () => {
   await world.preload()
@@ -42,63 +93,94 @@ onMounted(async () => {
 
   show = async () => {
     console.log('start')
-      if (world.isEnding && world.flags.waitingEndingStart) {
-        return
-      }
+    if (world.isEnding && world.flags.waitingEndingStart) {
+      return
+    }
 
-      const willVisible = !showPrompt.value
+    const willVisible = !showPrompt.value
 
-      const completed = $valueCompleted.get()
+    const completed = $valueCompleted.get()
 
-      if (completed) {
-        soundManager.play()
-        // world.voice.enableVoice('prompt completed')
-        resetPrompt()
-        $showPrompt.set(true)
-
-        return
-      }
-
+    if (completed) {
+      soundManager.play()
+      // world.voice.enableVoice('prompt completed')
       resetPrompt()
+      $showPrompt.set(true)
 
-      if (willVisible) {
-        soundManager.play()
-        // world.voice.enableVoice('prompt activated')
-        $showPrompt.set(true)
+      return
+    }
 
-        // start the prompt timeout countdown
-        extendPromptTimeout('prompt activated', true)
-      } else {
-        world.voice.stop()
-        $showPrompt.set(false)
+    resetPrompt()
 
-        clearPromptTimeout('prompt deactivated')
+    if (willVisible) {
+      soundManager.play()
+      // world.voice.enableVoice('prompt activated')
+      $showPrompt.set(true)
+
+      // start the prompt timeout countdown
+      extendPromptTimeout('prompt activated', true)
+    } else {
+      world.voice.stop()
+      $showPrompt.set(false)
+
+      clearPromptTimeout('prompt deactivated')
     }
   }
 
   window.addEventListener('keydown', async (event) => {
     const el = document.getElementById('prompt')
 
-    if(executed.value) {
+    if (executed.value) {
       executed.value = false
-      prompt.value = ""
+      prompt.value = ''
+      timer.value.forEach((t) => clearTimeout(t))
+      timer.value = []
+      log.value = []
     }
 
     if (el) {
       el.focus()
     }
 
-    if(event.key === 'Enter') {
-      console.log(prompt)
-      event.preventDefault();
-      document.getElementById('prompt').value = ""
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      document.getElementById('prompt').value = ''
       // prompt.value = ""
       executed.value = true
+      const res = await gen(prompt.value)
+      console.log(res)
 
-      // await switchDancers('yokroblingImprovise')
-      // runCommand('energy', ['upper', '300'])
-      // runCommand('rotations', ['x', '25'])
-      // runCommand('rotations', ['y', '100'])
+      let acc = 0
+
+      const setDance = async (set: Set) => {
+        log.value = [
+          ...log.value,
+          `DANCE > ${set.dance} | ${set.morph
+            .map(
+              (morph) => `${morph.key} [${morph.value[0]}, ${morph.value[1]}]`,
+            )
+            .join(' + ')}`,
+        ]
+        console.log('SET DANCE > ', set.dance)
+        world.voice.speak(set.dance)
+        await switchDancers(set.dance)
+        set.morph.forEach((morph) => {
+          runCommand(morph.key, morph.value)
+        })
+      }
+
+      for (let i = 0; i < res.set.length; i++) {
+        const set = res.set[i]
+        const t = setTimeout(() => {
+          setDance(set)
+        }, acc * 1000)
+        timer.value = [...timer.value, t]
+        acc += set.time
+        // await switchDancers('yokroblingImprovise')
+        // runCommand('energy', ['upper', '300'])
+        // runCommand('rotations', ['x', '25'])
+        // runCommand('rotations', ['y', '100'])
+      }
     }
 
     // if (event.key === ' ' || event.key === 'PageDown') {
@@ -239,18 +321,32 @@ onMounted(async () => {
         Add Command
       </button> -->
       <div class="flex gap-2">
-        <div class="text-white text-2xl">prompt ></div>
+        <div class="text-white text-2xl">></div>
         <div class="flex items-end">
-          <textarea v-model="prompt" class="max-w-md bg-transparent focus:outline-none border-none text-white text-2xl" type="text" id="prompt" style="caret-color: transparent; field-sizing: content; resize: none"></textarea>
+          <textarea
+            v-model="prompt"
+            class="max-w-md bg-transparent focus:outline-none border-none text-white text-2xl"
+            type="text"
+            id="prompt"
+            style="
+              caret-color: transparent;
+              field-sizing: content;
+              resize: none;
+            "
+          ></textarea>
           <!-- a -->
         </div>
       </div>
     </div>
 
-    <div class="absolute bottom-4 flex flex-col gap-2 font-mono" v-if="executed">
-      <div class="bg-red-500 text-white p-1 w-min">executed</div>
-      <div class="text-sm text-neutral-300 max-w-md">{{ prompt }}</div>
+    <div
+      class="absolute bottom-4 flex flex-col gap-2 font-mono"
+      v-if="executed"
+    >
+      <div class="bg-red-500 text-white p-1 w-min">executing</div>
+      <div class="text-sm text-neutral-500">
+        <div v-for="i in log">{{ i }}</div>
+      </div>
     </div>
   </div>
-
 </template>
