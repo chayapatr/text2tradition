@@ -77,6 +77,7 @@ onMounted(async () => {
   await world.preload()
   await world.setup()
   world.maebot()
+  runCommand('speed', ['30'])
 
   show = async () => {
     console.log('start')
@@ -180,7 +181,8 @@ onMounted(async () => {
           if (morph.name === 'space') runCommand(morph.name, [morph.value + ''])
           runCommand(morph.name, [morph.type, morph.value + ''])
         })
-        if (set.dance !== 'waiting') runCommand('speed', ['300'])
+        if (set.dance === 'waiting') runCommand('speed', ['30'])
+        else runCommand('speed', ['300'])
 
         description.value[0] = set.dance
         description.value[1] = set.description
