@@ -4,14 +4,14 @@ import { world } from './world'
 export type DanceConfig = { model: ModelKey; action?: string }
 
 const danceKeyMap: Record<string, DanceConfig> = {
-  kukpat: { model: 'kukpat' },
-  terry: { model: 'terry' },
-  changhung: { model: 'changhung' },
-  yokrob: { model: 'yokrob' },
-  yokroblingImprovise: {
-    model: 'yokroblingImprovise',
-    action: 'yokroblingimprovised_chr02.001',
-  },
+  // kukpat: { model: 'kukpat' },
+  // terry: { model: 'terry' },
+  // changhung: { model: 'changhung' },
+  // yokrob: { model: 'yokrob' },
+  // yokroblingImprovise: {
+  //   model: 'yokroblingImprovise',
+  //   action: 'yokroblingimprovised_chr02.001',
+  // },
 
   // tranimid: { model: 'tranimid' },
   // robot33: { model: 'robot', action: 'no.33_..001' },

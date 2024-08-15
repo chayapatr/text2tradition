@@ -2,6 +2,7 @@
 import { ref, onMounted, ReactiveFlags } from 'vue'
 import { useStore } from '@nanostores/vue'
 import { runCommand } from '../command.ts'
+import { postures } from '../postures'
 
 import { switchDancers } from '../switch-dance'
 import type { Ref } from 'vue'
@@ -36,6 +37,7 @@ let executed = ref(false)
 let log: Ref<string[]> = ref([])
 let timer: Ref<number[]> = ref([])
 let pending = ref(false)
+let description: Ref<[string, string]> = ref(['', ''])
 
 let show = () => {}
 // const plotterContainer = ref<HTMLDivElement>()
@@ -51,6 +53,7 @@ type Morph =
 interface Set {
   dance: string
   morph: { name: Morph; type: string; value: number }[]
+  description: string
   // time: number
 }
 
@@ -62,7 +65,7 @@ const gen = async (prompt: string): Promise<{ set: Set[] }> => {
     }),
   }).then((x) => x.text())
   const parsed = JSON.parse(text)
-  console.log('PARSED', parsed, parsed.content)
+  // console.log('PARSED', parsed, parsed.content)
   return parsed.parsed
   // return JSON.parse(
   //   `{"set": [{"dance": "kukpat","morph": [{"name": "energy","type": "upper","value": 150},{"name": "curve","type": "rightArm","value": 60}]},{"dance": "yokrob","morph": [{"name": "shifting","type": "left","value": 20},{"name": "space","type": "","value": 10}]},{"dance": "terry","morph": [{"name": "rotations","type": "x","value": 45}]}]}`,
@@ -133,6 +136,7 @@ onMounted(async () => {
       // prompt.value = ""
       pending.value = true
       const res = await gen(prompt.value)
+      console.log(res)
       pending.value = false
       executed.value = true
 
@@ -147,32 +151,54 @@ onMounted(async () => {
             set.morph.length > 0
               ? `| ${set.morph
                   .map(
-                    (morph) => `${morph.name} [${morph.type}, ${morph.value}]`,
+                    (morph) =>
+                      `${
+                        morph.name === 'space'
+                          ? `${morph.name} [${morph.value}]`
+                          : `${morph.name} [${morph.type}, ${morph.value}]`
+                      }`,
                   )
                   .join(' + ')}`
               : ''
           }`,
         ]
         // world.voice.speak(set.dance)
-        await switchDancers(`pose${set.dance}`)
+        await switchDancers(
+          set.dance === 'waiting' ? 'waiting' : `pose${set.dance}`,
+        )
         set.morph.forEach((morph) => {
+          if (morph.name === 'space') runCommand(morph.name, [morph.value + ''])
           runCommand(morph.name, [morph.type, morph.value + ''])
         })
         runCommand('speed', ['300'])
+
+        description.value[0] = set.dance
+        description.value[1] = set.description
       }
 
       for (let i = 0; i < res.set.length; i++) {
         const set = res.set[i]
+        if (+set.dance > 50) continue
         const t = setTimeout(() => {
           setDance(set)
         }, acc * 1000)
         timer.value = [...timer.value, t]
-        acc += 10 // set.time
+        acc += 9 // set.time
         // await switchDancers('yokroblingImprovise')
         // runCommand('energy', ['upper', '300'])
         // runCommand('rotations', ['x', '25'])
         // runCommand('rotations', ['y', '100'])
       }
+
+      const t = setTimeout(() => {
+        console.log('waiting...')
+        setDance({
+          dance: 'waiting',
+          morph: [],
+          description: '',
+        })
+      }, acc * 1000)
+      timer.value = [...timer.value, t]
     }
 
     // if (event.key === ' ' || event.key === 'PageDown') {
@@ -308,13 +334,13 @@ onMounted(async () => {
     <StepPrompt v-if="showPrompt" />
     <StageControl />
 
-    <div class="fixed w-screen h-screen m-4 font-mono">
+    <div class="fixed w-screen h-screen p-4 font-mono flex justify-between">
       <!-- <button @click="show" class="border-0 lg:text-4 bg-neutral-900 bg-black text-white px-4 py-2 hover:bg-neutral-800 hover:cursor-pointer">
         Add Command
       </button> -->
       <div class="flex gap-2">
         <div class="text-white text-2xl">></div>
-        <div class="flex items-end">
+        <div class="flexasdf">
           <textarea
             v-model="prompt"
             class="max-w-md bg-transparent focus:outline-none border-none text-white text-2xl"
@@ -328,6 +354,18 @@ onMounted(async () => {
           ></textarea>
           <!-- a -->
         </div>
+      </div>
+
+      <div
+        class="flex flex-col text-neutral-400 font-normal items-end px-10 gap-2"
+        v-if="description[0] && description[0] !== 'waiting'"
+      >
+        <h3 class="m-0 text-base">
+          {{ postures[+description[0] - 1].english }} ({{
+            postures[+description[0] - 1].thai
+          }})
+        </h3>
+        <h5 class="m-0 text-sm text-right max-w-md">{{ description[1] }}</h5>
       </div>
     </div>
 
@@ -349,4 +387,3 @@ onMounted(async () => {
     </div>
   </div>
 </template>
-soundManager,import { set } from 'date-fns'
