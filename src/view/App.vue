@@ -75,8 +75,8 @@ const gen = async (prompt: string): Promise<{ set: Set[] }> => {
 
 onMounted(async () => {
   await world.preload()
-  world.maebot()
   await world.setup()
+  world.maebot()
 
   show = async () => {
     console.log('start')

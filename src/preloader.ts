@@ -14,7 +14,7 @@ export class ModelPreloader {
     const start = performance.now()
 
     const sources = Object.values(Character.sources).filter(
-      (src) => src && src.endsWith('.glb'),
+      (src) => src && src === 'subinwaiting.glb',
     )
 
     console.log(`-- starting GLTF preload --`)
