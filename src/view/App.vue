@@ -39,6 +39,7 @@ let timer: Ref<number[]> = ref([])
 let pending = ref(false)
 let description: Ref<[string, string]> = ref(['', ''])
 let clear: Ref<boolean> = ref(false)
+let error: Ref<string> = ref('enter a prompt')
 
 let show = () => {}
 // const plotterContainer = ref<HTMLDivElement>()
@@ -71,6 +72,39 @@ const gen = async (prompt: string): Promise<{ set: Set[] }> => {
   // return JSON.parse(
   //   `{"set": [{"dance": "kukpat","morph": [{"name": "energy","type": "upper","value": 150},{"name": "curve","type": "rightArm","value": 60}]},{"dance": "yokrob","morph": [{"name": "shifting","type": "left","value": 20},{"name": "space","type": "","value": 10}]},{"dance": "terry","morph": [{"name": "rotations","type": "x","value": 45}]}]}`,
   // )
+}
+
+const setDance = async (set: Set) => {
+  log.value = [
+    ...log.value,
+    `DANCE > ${set.dance} ${
+      set.morph.length > 0
+        ? `| ${set.morph
+            .map(
+              (morph) =>
+                `${
+                  morph.name === 'space'
+                    ? `${morph.name} [${morph.value}]`
+                    : `${morph.name} [${morph.type}, ${morph.value}]`
+                }`,
+            )
+            .join(' + ')}`
+        : ''
+    }`,
+  ]
+
+  console.log('SET DANCE >>', set.dance)
+
+  await switchDancers(set.dance === 'waiting' ? 'waiting' : `pose${set.dance}`)
+  set.morph.forEach((morph) => {
+    if (morph.name === 'space') runCommand(morph.name, [morph.value + ''])
+    runCommand(morph.name, [morph.type, morph.value + ''])
+  })
+  if (set.dance === 'waiting') runCommand('speed', ['30'])
+  else runCommand('speed', ['300'])
+
+  description.value[0] = set.dance
+  description.value[1] = set.description
 }
 
 onMounted(async () => {
@@ -123,12 +157,22 @@ onMounted(async () => {
       clear.value = true
     }
 
+    if (error.value) {
+      error.value = ''
+    }
+
     if (el) {
       el.focus()
     }
 
     if (event.key === 'Enter') {
-      // reset
+      if (!prompt.value) {
+        event.preventDefault()
+        document.getElementById('prompt').value = ''
+        error.value = 'enter a prompt'
+        return
+      }
+
       executed.value = false
       clear.value = false
       timer.value.forEach((t) => clearTimeout(t))
@@ -141,76 +185,47 @@ onMounted(async () => {
       document.getElementById('prompt').value = ''
       // prompt.value = ""
       pending.value = true
-      const res = await gen(prompt.value)
-      // const res = JSON.parse(
-      //   `{"set":[{"dance":29,"morph":[{"name":"energy","type":"upper","value":200}],"description":"This represents the revolutionary act of creating a new field, echoing the inventiveness involved in information theory."},{"dance":13,"morph":[{"name":"shifting","type":"right","value":50},{"name":"space","type":"","value":40}],"description":"Symbolizing communication and the exchange of ideas that are central to information theory."},{"dance":20,"morph":[{"name":"curve","type":"rightArm","value":70}],"description":"Reflecting the control and precise manipulation required to develop complex theoretical concepts."},{"dance":7,"morph":[{"name":"energy","type":"lower","value":180}],"description":"Illustrates the intimate understanding and depth required in theoretical foundations."},{"dance":22,"morph":[{"name":"curve","type":"leftLeg","value":60},{"name":"space","type":"","value":30}],"description":"Conveying the vast and expansive nature of Shannon's contributions, which have wide-reaching implications."},{"dance":35,"morph":[],"description":"Represents the robustness and enduring nature of Shannon's legacy in the field of electrical engineering and beyond."}]}`,
-      // )
-      console.log('RES >>>>>>>', JSON.stringify(res))
-      pending.value = false
-      executed.value = true
 
-      pending.value = false
+      try {
+        let res = await gen(prompt.value)
+        // const res = JSON.parse(
+        //   `{"set":[{"dance":29,"morph":[{"name":"energy","type":"upper","value":200}],"description":"This represents the revolutionary act of creating a new field, echoing the inventiveness involved in information theory."},{"dance":13,"morph":[{"name":"shifting","type":"right","value":50},{"name":"space","type":"","value":40}],"description":"Symbolizing communication and the exchange of ideas that are central to information theory."},{"dance":20,"morph":[{"name":"curve","type":"rightArm","value":70}],"description":"Reflecting the control and precise manipulation required to develop complex theoretical concepts."},{"dance":7,"morph":[{"name":"energy","type":"lower","value":180}],"description":"Illustrates the intimate understanding and depth required in theoretical foundations."},{"dance":22,"morph":[{"name":"curve","type":"leftLeg","value":60},{"name":"space","type":"","value":30}],"description":"Conveying the vast and expansive nature of Shannon's contributions, which have wide-reaching implications."},{"dance":35,"morph":[],"description":"Represents the robustness and enduring nature of Shannon's legacy in the field of electrical engineering and beyond."}]}`,
+        // )
+        console.log('RES >>>>>>>', JSON.stringify(res))
+        pending.value = false
+        executed.value = true
 
-      let acc = 0
+        pending.value = false
 
-      const setDance = async (set: Set) => {
-        log.value = [
-          ...log.value,
-          `DANCE > ${set.dance} ${
-            set.morph.length > 0
-              ? `| ${set.morph
-                  .map(
-                    (morph) =>
-                      `${
-                        morph.name === 'space'
-                          ? `${morph.name} [${morph.value}]`
-                          : `${morph.name} [${morph.type}, ${morph.value}]`
-                      }`,
-                  )
-                  .join(' + ')}`
-              : ''
-          }`,
-        ]
+        let acc = 0
 
-        console.log('SET DANCE >>', set.dance)
+        for (let i = 0; i < res.set.length; i++) {
+          const set = res.set[i]
+          if (+set.dance > 50) continue
+          const t = setTimeout(() => {
+            setDance(set)
+          }, acc * 1000)
+          timer.value = [...timer.value, t]
+          acc += 9 // set.time
+          // await switchDancers('yokroblingImprovise')
+          // runCommand('energy', ['upper', '300'])
+          // runCommand('rotations', ['x', '25'])
+          // runCommand('rotations', ['y', '100'])
+        }
 
-        await switchDancers(
-          set.dance === 'waiting' ? 'waiting' : `pose${set.dance}`,
-        )
-        set.morph.forEach((morph) => {
-          if (morph.name === 'space') runCommand(morph.name, [morph.value + ''])
-          runCommand(morph.name, [morph.type, morph.value + ''])
-        })
-        if (set.dance === 'waiting') runCommand('speed', ['30'])
-        else runCommand('speed', ['300'])
-
-        description.value[0] = set.dance
-        description.value[1] = set.description
-      }
-
-      for (let i = 0; i < res.set.length; i++) {
-        const set = res.set[i]
-        if (+set.dance > 50) continue
         const t = setTimeout(() => {
-          setDance(set)
+          console.log('waiting...')
+          setDance({
+            dance: 'waiting',
+            morph: [],
+            description: '',
+          })
         }, acc * 1000)
         timer.value = [...timer.value, t]
-        acc += 9 // set.time
-        // await switchDancers('yokroblingImprovise')
-        // runCommand('energy', ['upper', '300'])
-        // runCommand('rotations', ['x', '25'])
-        // runCommand('rotations', ['y', '100'])
+      } catch {
+        pending.value = false
+        error.value = "can't connect to ML"
       }
-
-      const t = setTimeout(() => {
-        console.log('waiting...')
-        setDance({
-          dance: 'waiting',
-          morph: [],
-          description: '',
-        })
-      }, acc * 1000)
-      timer.value = [...timer.value, t]
     }
 
     // if (event.key === ' ' || event.key === 'PageDown') {
@@ -390,11 +405,19 @@ onMounted(async () => {
       <div class="text-white p-1 w-min">processing</div>
     </div>
 
+    <div class="absolute bottom-4 flex gap-2 font-mono p-6" v-if="error">
+      <div
+        class="bg-red-500 aspect-square h-7 animate__rubberBand shadow relative z-2 flex items-center justify-center animate__animated"
+      />
+      <div class="text-white p-1">{{ error }}</div>
+    </div>
+
     <div
       class="absolute bottom-4 flex flex-col gap-2 font-mono p-6"
       v-if="
-        (description[0] && description[0] !== 'waiting') ||
-        (description[0] === 'waiting' && !pending)
+        ((description[0] && description[0] !== 'waiting' && !pending) ||
+          (description[0] === 'waiting' && !pending)) &&
+        !error
       "
     >
       <div class="bg-red-500 text-white p-1 w-min">
