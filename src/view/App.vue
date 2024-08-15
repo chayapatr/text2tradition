@@ -4,6 +4,7 @@ import { useStore } from '@nanostores/vue'
 import { runCommand } from '../command.ts'
 
 import { switchDancers } from '../switch-dance'
+import type { Ref } from 'vue'
 
 import {
   $showPrompt,
@@ -32,8 +33,8 @@ const rendererElement = ref<HTMLDivElement>()
 
 let prompt = ref('')
 let executed = ref(false)
-let log = ref([])
-let timer = ref([])
+let log: Ref<string[]> = ref([])
+let timer: Ref<number[]> = ref([])
 
 let show = () => {
   console.log('hello!')
@@ -44,8 +45,8 @@ type Morph =
   | 'energy'
   | 'rotations'
   | 'space'
-  | 'reset'
-  | 'dances'
+  // | 'reset'
+  // | 'dances'
   | 'curve'
   | 'shifting'
 interface Set {
@@ -170,7 +171,7 @@ onMounted(async () => {
           }`,
         ]
         console.log('SET DANCE > ', set.dance)
-        world.voice.speak(set.dance)
+        // world.voice.speak(set.dance)
         await switchDancers(set.dance)
         set.morph.forEach((morph) => {
           runCommand(morph.key, morph.value)

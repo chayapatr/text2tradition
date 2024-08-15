@@ -1,4 +1,6 @@
 import OpenAI from 'openai'
+import z from 'zod'
+import { zodResponseFormat } from 'openai/helpers/zod'
 
 const run = async (apiKey) => {
   console.log('run! hello!', apiKey)
@@ -7,15 +9,84 @@ const run = async (apiKey) => {
     apiKey,
   })
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+  // const completion = await openai.chat.completions.create({
+  //   model: 'gpt-4o-mini',
+  //   messages: [
+  //     { role: 'system', content: 'You are a helpful assistant.' },
+  //     {
+  //       role: 'user',
+  //       content: 'Write a haiku about recursion in programming.',
+  //     },
+  //   ],
+  // })
+
+  // Set {
+  //   dance: string
+  //   morph: { key: Morph; value: [string, string] }[]
+  //   time: number
+  // }
+
+  const Morph = z.object({
+    value: z.union([
+      z.object({
+        name: z.literal('energy'),
+        type: z.enum(['upper', 'lower']),
+        value: z.number(),
+      }),
+      z.object({
+        name: z.literal('curve'),
+        type: z.enum(['body', 'leftArm', 'rightArm', 'leftLeg', 'rightLeg']),
+        value: z.number(),
+      }),
+      z.object({
+        name: z.literal('shifting'),
+        type: z.enum(['left', 'right']),
+        value: z.number(),
+      }),
+      z.object({
+        name: z.literal('space'),
+        type: z.literal(''),
+        value: z.number(),
+      }),
+      z.object({
+        name: z.literal('rotations'),
+        type: z.enum(['x', 'y', 'z']),
+        value: z.number(),
+      }),
+      z.object({
+        name: z.literal('speed'),
+        type: z.literal(''),
+        value: z.number(),
+      }),
+    ]),
+  })
+
+  const Set = z.object({
+    dance: z.number(),
+    morph: z.array(Morph),
+    // dance: z.string(),
+  })
+
+  const Sets = z.object({
+    sets: z.array(Set),
+  })
+
+  const completion = await openai.beta.chat.completions.parse({
+    model: 'gpt-4o-2024-08-06',
     messages: [
-      { role: 'system', content: 'You are a helpful assistant.' },
+      {
+        role: 'system',
+        content: 'You are an automated object schema analyzer',
+      },
       {
         role: 'user',
-        content: 'Write a haiku about recursion in programming.',
+        content: `provide sample data from the including respose format,
+          be noted that dance can be ranged from number 1 to 59, range of morph value is 0-100 except speed and energy that will be 0-300
+          sets should have less than 5 set and morph should be less than 3 per set
+          `,
       },
     ],
+    response_format: zodResponseFormat(Sets, 'sets_response'),
   })
 
   console.log('>', completion.choices[0].message)
@@ -24,15 +95,17 @@ const run = async (apiKey) => {
 
 export async function onRequest({ request, env }) {
   // const res = await run(env.OPENAI_API_KEY)
-  const body = await request.text()
-  const res = {
-    role: 'assistant',
-    content:
-      'Functions call again,  \n' +
-      'Infinite loops intertwine,  \n' +
-      'Depth of thought unfolds.',
-    refusal: null,
-  }
+  console.log('RUN!')
+  const res = await run(env.OPENAI_API_KEY)
+  // const body = await request.text()
+  // const res = {
+  //   role: 'assistant',
+  //   content:
+  //     'Functions call again,  \n' +
+  //     'Infinite loops intertwine,  \n' +
+  //     'Depth of thought unfolds.',
+  //   refusal: null,
+  // }
   // return new Response(JSON.stringify(body))
-  return new Response(body)
+  return new Response(JSON.stringify(res))
 }

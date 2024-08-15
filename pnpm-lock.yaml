@@ -74,6 +74,9 @@ importers:
       vue-overdrive:
         specifier: ^1.2.0
         version: 1.2.0
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
     devDependencies:
       '@nanostores/logger':
         specifier: ^0.2.4
