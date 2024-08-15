@@ -38,6 +38,7 @@ let log: Ref<string[]> = ref([])
 let timer: Ref<number[]> = ref([])
 let pending = ref(false)
 let description: Ref<[string, string]> = ref(['', ''])
+let clear: Ref<boolean> = ref(false)
 
 let show = () => {}
 // const plotterContainer = ref<HTMLDivElement>()
@@ -116,13 +117,9 @@ onMounted(async () => {
   window.addEventListener('keydown', async (event) => {
     const el = document.getElementById('prompt')
 
-    if (executed.value) {
-      executed.value = false
+    if (!clear.value) {
       prompt.value = ''
-      timer.value.forEach((t) => clearTimeout(t))
-      timer.value = []
-      log.value = []
-      world.params.reset()
+      clear.value = true
     }
 
     if (el) {
@@ -130,13 +127,24 @@ onMounted(async () => {
     }
 
     if (event.key === 'Enter') {
+      // reset
+      executed.value = false
+      clear.value = false
+      timer.value.forEach((t) => clearTimeout(t))
+      timer.value = []
+      log.value = []
+      world.params.reset()
+
       soundManager.play()
       event.preventDefault()
       document.getElementById('prompt').value = ''
       // prompt.value = ""
       pending.value = true
       const res = await gen(prompt.value)
-      console.log(res)
+      // const res = JSON.parse(
+      //   `{"set":[{"dance":29,"morph":[{"name":"energy","type":"upper","value":200}],"description":"This represents the revolutionary act of creating a new field, echoing the inventiveness involved in information theory."},{"dance":13,"morph":[{"name":"shifting","type":"right","value":50},{"name":"space","type":"","value":40}],"description":"Symbolizing communication and the exchange of ideas that are central to information theory."},{"dance":20,"morph":[{"name":"curve","type":"rightArm","value":70}],"description":"Reflecting the control and precise manipulation required to develop complex theoretical concepts."},{"dance":7,"morph":[{"name":"energy","type":"lower","value":180}],"description":"Illustrates the intimate understanding and depth required in theoretical foundations."},{"dance":22,"morph":[{"name":"curve","type":"leftLeg","value":60},{"name":"space","type":"","value":30}],"description":"Conveying the vast and expansive nature of Shannon's contributions, which have wide-reaching implications."},{"dance":35,"morph":[],"description":"Represents the robustness and enduring nature of Shannon's legacy in the field of electrical engineering and beyond."}]}`,
+      // )
+      console.log('RES >>>>>>>', JSON.stringify(res))
       pending.value = false
       executed.value = true
 
@@ -162,7 +170,9 @@ onMounted(async () => {
               : ''
           }`,
         ]
-        // world.voice.speak(set.dance)
+
+        console.log('SET DANCE >>', set.dance)
+
         await switchDancers(
           set.dance === 'waiting' ? 'waiting' : `pose${set.dance}`,
         )
@@ -340,7 +350,7 @@ onMounted(async () => {
       </button> -->
       <div class="flex gap-2">
         <div class="text-white text-2xl">></div>
-        <div class="flexasdf">
+        <div class="flex">
           <textarea
             v-model="prompt"
             class="max-w-md bg-transparent focus:outline-none border-none text-white text-2xl"
@@ -357,15 +367,17 @@ onMounted(async () => {
       </div>
 
       <div
-        class="flex flex-col text-neutral-400 font-normal items-end px-10 gap-2"
+        class="flex flex-col text-neutral-400 items-end px-10 gap-2"
         v-if="description[0] && description[0] !== 'waiting'"
       >
-        <h3 class="m-0 text-base">
+        <h3 class="m-0 text-base font-normal">
           {{ postures[+description[0] - 1].english }} ({{
             postures[+description[0] - 1].thai
           }})
         </h3>
-        <h5 class="m-0 text-sm text-right max-w-md">{{ description[1] }}</h5>
+        <h5 class="m-0 text-sm text-right max-w-md font-extralight">
+          {{ description[1] }}
+        </h5>
       </div>
     </div>
 
@@ -378,9 +390,14 @@ onMounted(async () => {
 
     <div
       class="absolute bottom-4 flex flex-col gap-2 font-mono p-6"
-      v-if="executed"
+      v-if="
+        (description[0] && description[0] !== 'waiting') ||
+        (description[0] === 'waiting' && !pending)
+      "
     >
-      <div class="bg-red-500 text-white p-1 w-min">executing</div>
+      <div class="bg-red-500 text-white p-1 w-min">
+        {{ description[0] !== 'waiting' ? 'executing' : 'done' }}
+      </div>
       <div class="text-sm text-neutral-500">
         <div v-for="i in log">{{ i }}</div>
       </div>

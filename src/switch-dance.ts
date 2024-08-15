@@ -13,6 +13,8 @@ const danceKeyMap: Record<string, DanceConfig> = {
   //   action: 'yokroblingimprovised_chr02.001',
   // },
 
+  waiting: { model: 'waiting' },
+
   // tranimid: { model: 'tranimid' },
   // robot33: { model: 'robot', action: 'no.33_..001' },
   // robot57: { model: 'robot', action: 'no.57_.' },
@@ -23,6 +25,7 @@ const danceKeyMap: Record<string, DanceConfig> = {
 }
 
 for(let i=1;i<=59;i++) {
+  if(i === 20) danceKeyMap[`pose${i}`] = { model: `pose${i}`, action: `no21_Tas` };
   danceKeyMap[`pose${i}`] = { model: `pose${i}`, action: `no${i}_Tas` };
 }
 

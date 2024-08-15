@@ -295,7 +295,7 @@ export class Character {
 
     pose30: 'no30_Tas',
     pose31: 'no31_Tas',
-    pose32: 'no32_Tas',
+    pose32: 'no9_Tas',
     pose33: 'no33_Tas',
     pose34: 'no34_Tas',
     pose35: 'no35_Tas',
@@ -579,6 +579,8 @@ export class Character {
 
   updateAction() {
     const config = this.options
+
+    // console.log('all actions:', this.actions)
 
     // If we did not define the proper default action, fallback to the first action.
     if (!config.action) {
