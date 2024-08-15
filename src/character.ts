@@ -154,13 +154,15 @@ export class Character {
   static sources = {
     none: '',
 
-    // waiting: 'subinwaiting.glb',
-    waiting: 'Kukpat.glb',
+    waiting: 'subinwaiting.glb',
+    kukpat: 'Kukpat.glb',
     // kukpat: 'Kukpat.glb',
     terry: 'terry.glb',
     // changhung: 'changhung.glb',
     yokrob: 'yokrob.glb',
     yokroblingImprovise: 'improvise.glb',
+
+    // pose1: 'maebot/1.glb'
 
     // Pichet dancers in ending scene.
     // pichetMaster: 'Master.glb',
@@ -192,8 +194,8 @@ export class Character {
     // yokrob: 'yokrobling_Tas',
     yokroblingImprovise: 'yokroblingimprovised_chr02.001',
 
-    // waiting: 'sit002_Tas.001',
-    waiting: 'kukpat_Tas',
+    waiting: 'sit002_Tas.001',
+    kukpat: 'kukpat_Tas',
     yokrob: 'yokrobling_Tas',
 
     // pichetMaster: 'Master',

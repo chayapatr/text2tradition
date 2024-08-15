@@ -375,6 +375,8 @@ export class World {
     character.handlers.animationLoaded = this.handleAnimationChange.bind(this)
     character.handlers.setCameraAngle = this.setCamera.bind(this)
 
+    console.log(`"add character"`, character)
+
     character.handlers.fade = async (mode) => {
       if (mode === 'in') await world.fadeIn()
       if (mode === 'out') await world.fadeOut()

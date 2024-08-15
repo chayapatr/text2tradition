@@ -12,10 +12,10 @@ import {
   extendPromptTimeout,
   clearPromptTimeout,
   resetPrompt,
-  $nonFinalNum,
-  handleVoiceSelection,
-  $selectedChoiceKey,
-  $selectedValues,
+  // $nonFinalNum,
+  // handleVoiceSelection,
+  // $selectedChoiceKey,
+  // $selectedValues,
 } from '../store/choice'
 
 import { world } from '../world'
@@ -24,8 +24,8 @@ import StepPrompt from './StepPrompt.vue'
 import { soundManager } from '../ding.ts' // ding
 import StageControl from './StageControl.vue'
 
-import { EndingKeyframes } from '../character'
-import { $currentScene } from '../store/scene'
+// import { EndingKeyframes } from '../character'
+// import { $currentScene } from '../store/scene'
 
 const showPrompt = useStore($showPrompt)
 
@@ -35,10 +35,9 @@ let prompt = ref('')
 let executed = ref(false)
 let log: Ref<string[]> = ref([])
 let timer: Ref<number[]> = ref([])
+let pending = ref(false)
 
-let show = () => {
-  console.log('hello!')
-}
+let show = () => {}
 // const plotterContainer = ref<HTMLDivElement>()
 
 type Morph =
@@ -51,8 +50,8 @@ type Morph =
   | 'shifting'
 interface Set {
   dance: string
-  morph: { key: Morph; value: [string, string] }[]
-  time: number
+  morph: { name: Morph; type: string; value: number }[]
+  // time: number
 }
 
 const gen = async (prompt: string): Promise<{ set: Set[] }> => {
@@ -62,32 +61,12 @@ const gen = async (prompt: string): Promise<{ set: Set[] }> => {
       prompt: prompt,
     }),
   }).then((x) => x.text())
-  console.log(text)
-  return {
-    set: [
-      {
-        dance: 'yokroblingImprovise',
-        morph: [
-          { key: 'energy', value: ['upper', '300'] },
-          { key: 'rotations', value: ['y', '25'] },
-        ],
-        time: 5,
-      },
-      {
-        dance: 'yokrob',
-        morph: [
-          { key: 'space', value: ['upper', '200'] },
-          { key: 'rotations', value: ['x', '250'] },
-        ],
-        time: 5,
-      },
-      {
-        dance: 'kukpat',
-        morph: [],
-        time: 10,
-      },
-    ],
-  }
+  const parsed = JSON.parse(text)
+  console.log('PARSED', parsed, parsed.content)
+  return parsed.parsed
+  // return JSON.parse(
+  //   `{"set": [{"dance": "kukpat","morph": [{"name": "energy","type": "upper","value": 150},{"name": "curve","type": "rightArm","value": 60}]},{"dance": "yokrob","morph": [{"name": "shifting","type": "left","value": 20},{"name": "space","type": "","value": 10}]},{"dance": "terry","morph": [{"name": "rotations","type": "x","value": 45}]}]}`,
+  // )
 }
 
 onMounted(async () => {
@@ -150,9 +129,13 @@ onMounted(async () => {
       event.preventDefault()
       document.getElementById('prompt').value = ''
       // prompt.value = ""
-      executed.value = true
+      pending.value = true
       const res = await gen(prompt.value)
-      console.log(res)
+      pending.value = false
+      executed.value = true
+      console.log('RES >>>>>>>', res)
+
+      pending.value = false
 
       let acc = 0
 
@@ -163,18 +146,18 @@ onMounted(async () => {
             set.morph.length > 0
               ? `| ${set.morph
                   .map(
-                    (morph) =>
-                      `${morph.key} [${morph.value[0]}, ${morph.value[1]}]`,
+                    (morph) => `${morph.name} [${morph.type}, ${morph.value}]`,
                   )
                   .join(' + ')}`
               : ''
           }`,
         ]
         console.log('SET DANCE > ', set.dance)
+        console.log('SET MORPH > ', set.morph[0])
         // world.voice.speak(set.dance)
         await switchDancers(set.dance)
         set.morph.forEach((morph) => {
-          runCommand(morph.key, morph.value)
+          runCommand(morph.name, [morph.type, morph.value + ''])
         })
       }
 
@@ -184,7 +167,7 @@ onMounted(async () => {
           setDance(set)
         }, acc * 1000)
         timer.value = [...timer.value, t]
-        acc += set.time
+        acc += 5 // set.time
         // await switchDancers('yokroblingImprovise')
         // runCommand('energy', ['upper', '300'])
         // runCommand('rotations', ['x', '25'])
@@ -346,6 +329,13 @@ onMounted(async () => {
           <!-- a -->
         </div>
       </div>
+    </div>
+
+    <div class="absolute bottom-4 flex gap-2 font-mono p-6" v-if="pending">
+      <div
+        class="bg-red-500 aspect-square h-7 animate__rotateIn animate__infinite shadow relative z-2 flex items-center justify-center animate__animated"
+      />
+      <div class="text-white p-1 w-min">processing</div>
     </div>
 
     <div

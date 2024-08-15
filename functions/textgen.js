@@ -26,51 +26,50 @@ const run = async (apiKey) => {
   //   time: number
   // }
 
-  const Morph = z.object({
-    value: z.union([
-      z.object({
-        name: z.literal('energy'),
-        type: z.enum(['upper', 'lower']),
-        value: z.number(),
-      }),
-      z.object({
-        name: z.literal('curve'),
-        type: z.enum(['body', 'leftArm', 'rightArm', 'leftLeg', 'rightLeg']),
-        value: z.number(),
-      }),
-      z.object({
-        name: z.literal('shifting'),
-        type: z.enum(['left', 'right']),
-        value: z.number(),
-      }),
-      z.object({
-        name: z.literal('space'),
-        type: z.literal(''),
-        value: z.number(),
-      }),
-      z.object({
-        name: z.literal('rotations'),
-        type: z.enum(['x', 'y', 'z']),
-        value: z.number(),
-      }),
-      z.object({
-        name: z.literal('speed'),
-        type: z.literal(''),
-        value: z.number(),
-      }),
-    ]),
-  })
+  const Morph = z.union([
+    z.object({
+      name: z.literal('energy'),
+      type: z.enum(['upper', 'lower']),
+      value: z.number(),
+    }),
+    z.object({
+      name: z.literal('curve'),
+      type: z.enum(['body', 'leftArm', 'rightArm', 'leftLeg', 'rightLeg']),
+      value: z.number(),
+    }),
+    z.object({
+      name: z.literal('shifting'),
+      type: z.enum(['left', 'right']),
+      value: z.number(),
+    }),
+    z.object({
+      name: z.literal('space'),
+      type: z.literal(''),
+      value: z.number(),
+    }),
+    z.object({
+      name: z.literal('rotations'),
+      type: z.enum(['x', 'y', 'z']),
+      value: z.number(),
+    }),
+    // z.object({
+    //   name: z.literal('speed'),
+    //   type: z.literal(''),
+    //   value: z.number(),
+    // }),
+  ])
 
   const Set = z.object({
-    dance: z.number(),
+    // dance: z.number(),
+    dance: z.enum(['kukpat', 'yokrob', 'yokroblingImprovise', 'terry']),
     morph: z.array(Morph),
-    // dance: z.string(),
   })
 
   const Sets = z.object({
-    sets: z.array(Set),
+    set: z.array(Set),
   })
 
+  // dance can be ranged from number 1 to 59,
   const completion = await openai.beta.chat.completions.parse({
     model: 'gpt-4o-2024-08-06',
     messages: [
@@ -81,7 +80,8 @@ const run = async (apiKey) => {
       {
         role: 'user',
         content: `provide sample data from the including respose format,
-          be noted that dance can be ranged from number 1 to 59, range of morph value is 0-100 except speed and energy that will be 0-300
+          be noted that
+          range of morph value is 0-100 except speed and energy that will be 0-300
           sets should have less than 5 set and morph should be less than 3 per set
           `,
       },
