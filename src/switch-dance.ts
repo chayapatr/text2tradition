@@ -22,8 +22,13 @@ const danceKeyMap: Record<string, DanceConfig> = {
   // base59: { model: 'abstract57', action: 'no59_Tas' },
 }
 
+for(let i=1;i<=59;i++) {
+  danceKeyMap[`pose${i}`] = { model: `pose${i}`, action: `no${i}_Tas` };
+}
+
 export async function switchDancers(key: string) {
   const config = danceKeyMap[key]
+
   if (!config) return
 
   const { model, action } = config

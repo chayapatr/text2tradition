@@ -5,6 +5,7 @@ import { Character } from './character'
 
 export class ModelPreloader {
   ready = false
+  maebotReady = false
   models: Map<string, GLTF> = new Map()
 
   public async setup() {
@@ -23,6 +24,24 @@ export class ModelPreloader {
     console.log(`-- GLTF preload took ${performance.now() - start}ms`)
 
     this.ready = true
+  }
+
+  public async maebot() {
+    if (this.maebotReady) return
+
+    const start = performance.now()
+
+    const sources = Object.values(Character.sources).filter(
+      (src) => src && src.endsWith('.glb'),
+    )
+
+    console.log(`-- starting GLTF preload --`)
+
+    await Promise.all(sources.map((src) => this.load(src)))
+
+    console.log(`-- GLTF preload took ${performance.now() - start}ms`)
+
+    this.maebotReady = true
   }
 
   private async load(source: string) {

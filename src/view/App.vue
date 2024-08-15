@@ -71,6 +71,7 @@ const gen = async (prompt: string): Promise<{ set: Set[] }> => {
 
 onMounted(async () => {
   await world.preload()
+  world.maebot()
   await world.setup()
 
   show = async () => {
@@ -126,6 +127,7 @@ onMounted(async () => {
     }
 
     if (event.key === 'Enter') {
+      soundManager.play()
       event.preventDefault()
       document.getElementById('prompt').value = ''
       // prompt.value = ""
@@ -133,7 +135,6 @@ onMounted(async () => {
       const res = await gen(prompt.value)
       pending.value = false
       executed.value = true
-      console.log('RES >>>>>>>', res)
 
       pending.value = false
 
@@ -152,13 +153,12 @@ onMounted(async () => {
               : ''
           }`,
         ]
-        console.log('SET DANCE > ', set.dance)
-        console.log('SET MORPH > ', set.morph[0])
         // world.voice.speak(set.dance)
-        await switchDancers(set.dance)
+        await switchDancers(`pose${set.dance}`)
         set.morph.forEach((morph) => {
           runCommand(morph.name, [morph.type, morph.value + ''])
         })
+        runCommand('speed', ['300'])
       }
 
       for (let i = 0; i < res.set.length; i++) {
@@ -167,7 +167,7 @@ onMounted(async () => {
           setDance(set)
         }, acc * 1000)
         timer.value = [...timer.value, t]
-        acc += 5 // set.time
+        acc += 10 // set.time
         // await switchDancers('yokroblingImprovise')
         // runCommand('energy', ['upper', '300'])
         // runCommand('rotations', ['x', '25'])
@@ -349,3 +349,4 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+soundManager,import { set } from 'date-fns'

@@ -704,6 +704,10 @@ export class World {
     await preloader.setup()
   }
 
+  async maebot() {
+    await preloader.maebot()
+  }
+
   async startShadowCharacter() {
     if (this.flags.shadowCharacters) return
 

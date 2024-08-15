@@ -61,7 +61,7 @@ const run = async (apiKey) => {
 
   const Set = z.object({
     // dance: z.number(),
-    dance: z.enum(['kukpat', 'yokrob', 'yokroblingImprovise', 'terry']),
+    dance: z.number(), // z.enum(['kukpat', 'yokrob', 'yokroblingImprovise', 'terry']), // z.number()
     morph: z.array(Morph),
   })
 
@@ -80,7 +80,7 @@ const run = async (apiKey) => {
       {
         role: 'user',
         content: `provide sample data from the including respose format,
-          be noted that
+          be noted that dance must be ranged from 1 to 30
           range of morph value is 0-100 except speed and energy that will be 0-300
           sets should have less than 5 set and morph should be less than 3 per set
           `,
